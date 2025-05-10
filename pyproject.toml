@@ -11,7 +11,11 @@ dependencies = [
     "django",
     "pillow",
     "django-crispy-forms",
-    "crispy-bootstrap5"
+    "crispy-bootstrap5",
+    "djangorestframework",
+    "django-cors-headers",
+    "drf-yasg",
+    "djangorestframework-simplejwt"
 ]
 
 
