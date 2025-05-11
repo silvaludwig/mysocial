@@ -1,9 +1,11 @@
 from django.shortcuts import get_object_or_404
-from rest_framework import generics
-from .models import Post, Comment
-from .serializers import PostSerializer, CommentSerializer
+from rest_framework import generics, status
+from .models import Post, Comment, Reaction
+from .serializers import PostSerializer, CommentSerializer, ReactionSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import PermissionDenied
+from rest_framework.views import APIView
+from rest_framework.response import Response
 
 
 class PostListCreateView(generics.ListCreateAPIView):
@@ -58,3 +60,21 @@ class CommentRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
         if instance.user != self.request.user:
             raise PermissionDenied("You have no permission to delete this comment")
         instance.delete()
+
+
+class ReactionView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, post_id, reaction_type):
+        post = get_object_or_404(Post, pk=post_id)
+        reaction, created = Reaction.objects.update_or_create(
+            user=request.user, 
+            post=post, 
+            defaults={'reaction_type': reaction_type},
+            )
+
+        if not created:
+            reaction.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        
+        return Response(ReactionSerializer(reaction).data, status=status.HTTP_201_CREATED)

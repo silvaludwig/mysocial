@@ -20,3 +20,20 @@ class Comment(models.Model):
 
     def __str__(self):
         return f'Commented successfully by {self.user}'
+    
+
+class Reaction(models.Model):
+    LIKE = 'like'
+    DISLIKE = 'dislike'
+    REACTION_TYPES = [
+        (LIKE, 'Like'),
+        (DISLIKE, 'Dislike'),
+    ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='reactions')
+    reaction_type = models.CharField(max_length=7, choices=REACTION_TYPES)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ['user', 'post']
