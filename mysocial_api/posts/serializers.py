@@ -40,4 +40,3 @@ class CommentSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-
