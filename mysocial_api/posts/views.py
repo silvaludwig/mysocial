@@ -1,11 +1,13 @@
 from django.shortcuts import get_object_or_404
-from rest_framework import generics, status
+from rest_framework import generics, status, permissions
 from .models import Post, Comment, Reaction
 from .serializers import PostSerializer, CommentSerializer, ReactionSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.pagination import PageNumberPagination
+from django.db.models import Q
 
 
 class PostListCreateView(generics.ListCreateAPIView):
@@ -78,3 +80,16 @@ class ReactionView(APIView):
             return Response(status=status.HTTP_204_NO_CONTENT)
         
         return Response(ReactionSerializer(reaction).data, status=status.HTTP_201_CREATED)
+    
+class FeedView(generics.ListAPIView):
+    serializer_class = PostSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    pagination_class = PageNumberPagination
+    page_size = 10
+
+    def get_queryset(self):
+        user = self.request.user
+        return Post.objects.filter(
+            Q(user__profile__followers=user) |
+            Q(user=user)
+        ).order_by('-created_at').select_related('user')

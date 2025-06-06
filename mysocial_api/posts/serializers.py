@@ -22,14 +22,22 @@ class PostSerializer(serializers.ModelSerializer):
     dislike_count = serializers.SerializerMethodField()
     class Meta:
         model = Post
-        fields = ['id', 'user', 'title', 'content', 'like_count', 'dislike_count', 'created_at']
+        fields = [
+            'id', 
+            'user', 
+            'title', 
+            'content', 
+            'like_count', 
+            'dislike_count', 
+            'created_at',
+            ]
     
     def get_like_count(self, obj):
         return obj.reactions.filter(reaction_type=Reaction.LIKE).count()
     
     def get_dislike_count(self, obj):
         return obj.reactions.filter(reaction_type=Reaction.DISLIKE).count()
-
+    
 
 class CommentSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)

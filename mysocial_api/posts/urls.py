@@ -5,6 +5,7 @@ from .views import(
     CommentListCreateView, 
     CommentRetrieveUpdateDestroyView,
     ReactionView,
+    FeedView,
     )
 
 
@@ -14,4 +15,5 @@ urlpatterns = [
     path('api/posts/<int:post_id>/comments/', CommentListCreateView.as_view(), name='comment-list-create'),
     path('api/comments/<int:pk>/', CommentRetrieveUpdateDestroyView.as_view(), name='comment-detail'),
     path('api/posts/<int:post_id>/reaction/<str:reaction_type>/', ReactionView.as_view(), name='reaction-post'),
+    path('api/feed/', FeedView.as_view(), name='feed')
 ]
